@@ -53,12 +53,17 @@ public class MainActivity extends AppCompatActivity {
      *          in order to manage the different button and their behavior.
      */
     public void discoverDevices(View V){
+
         // if Adapter is null meaning the device is not supported with a BT device there for this won't work so instead of crash, simple toast to user
         if(mBtAdapter == null){
             Toast.makeText(this,"Device does not support Bluetooth",Toast.LENGTH_SHORT).show();
         }
         // if Adapter is not null, start device discovery using the device BT
         else {
+            // Clear the list if it has any value ( like from previous content )
+            if(arrayList.size()>0) {
+                arrayList.clear();
+            }
             mBtAdapter.startDiscovery();
         }
 
@@ -69,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             // Declare the action received from the onStart method that we override
             String action = intent.getAction();
+
 
             if(BluetoothDevice.ACTION_FOUND.equals(action)){
                 // Get the device founded near by
@@ -86,6 +92,22 @@ public class MainActivity extends AppCompatActivity {
                 // Notify the adapter on change and refresh list
                 arrayAdapter.notifyDataSetChanged();
             }
+
+            else if(BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)){
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                assert device != null;
+                // Log for us to check what we get
+                Log.i("Device",device.getName()+ "\n"+ device.getAddress()+"\n"+ device.getBondState());
+
+                if(device.getName() == null || device.getName().equals("")){
+
+                    arrayList.add("Unknown Device name"+ "\n"+ device.getAddress()+"\n"+ device.getBondState());
+                }else{
+                    arrayList.add(device.getName()+ "\n"+ device.getAddress()+"\n"+ device.getBondState());
+                }
+                arrayAdapter.notifyDataSetChanged();
+            }
+
         }
     };
 
@@ -96,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         IntentFilter intentFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        intentFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
         registerReceiver(broadcastReceiver,intentFilter);
     }
 
