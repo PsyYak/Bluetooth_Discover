@@ -17,11 +17,12 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
     private BluetoothAdapter mBtAdapter;
     private ListView mLvDevices;
-    private Button btnScan;
+    private Button btnScan,btnPair;
     private ArrayAdapter<String>arrayAdapter;
     private ArrayList<String> arrayList;
 
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Declare variables and connect with layout
         btnScan = findViewById(R.id.btnScan);
+        btnPair = findViewById(R.id.btnPair);
         mLvDevices = findViewById(R.id.list);
         // Get default device adapter
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -68,7 +70,30 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-    // Broadcast receiver is used to communicate with the device components and use them for our need ( discover near by BT devices )
+    public void getPairList(View v){
+
+        if(mBtAdapter==null){
+            Toast.makeText(getApplicationContext(),"Bluetooth Not Supported",Toast.LENGTH_SHORT).show();
+        }
+        else{
+            if(arrayList.size()>0){
+                arrayList.clear();
+            }
+
+            Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
+            if(pairedDevices.size()>0){
+                for(BluetoothDevice device: pairedDevices){
+                     arrayList.add("Name: "+device.getName() +"MAC Address: "+device.getAddress());
+                }
+            }
+        }
+    }
+
+
+
+
+
+    // Broadcast receiver is used to communicate with the device components and use them for our need ( discover near by BT devices / list connected devices)
      BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -107,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 arrayAdapter.notifyDataSetChanged();
             }
+
 
         }
     };
