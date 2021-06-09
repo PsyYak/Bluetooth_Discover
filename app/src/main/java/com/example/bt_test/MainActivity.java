@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -83,12 +84,11 @@ public class MainActivity extends AppCompatActivity {
             Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
             if(pairedDevices.size()>0){
                 for(BluetoothDevice device: pairedDevices){
-                     arrayList.add("Name: "+device.getName() +"MAC Address: "+device.getAddress());
+                     arrayList.add("Name: "+device.getName() +"MAC Address: "+device.getAddress()+" BondState: "+device.getBondState());
                 }
             }
         }
     }
-
 
 
 
